@@ -1,0 +1,11 @@
+include COPYING
+include README
+
+include mimicus/bin/*.py
+
+include mimicus/default.conf
+
+include mimicus/data/mini-test.csv
+include mimicus/data/mini-train.csv
+
+include mimicus/test/*.py

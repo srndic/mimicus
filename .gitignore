@@ -1,0 +1,7 @@
+*.pyc
+
+custom.conf
+
+/build/
+/dist/
+/mimicus.egg-info/

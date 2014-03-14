@@ -1,0 +1,12 @@
+# All CSV files except the base ones
+*.csv
+!contagio-ben.csv
+!contagio-mal.csv
+!contagio-nopdfrate.csv
+!virustotal-mal.csv
+!google-ben.csv
+!attack.csv
+
+# Any intermediate files
+contagio.scaler
+*.model
