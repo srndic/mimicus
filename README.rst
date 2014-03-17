@@ -2,9 +2,11 @@
 Mimicus v1.0
 ================
 
-----------------
+-----------------------------------------------------
 A Python library for adversarial classifier evasion. 
-----------------
+-----------------------------------------------------
+
+Nedim Srndic and Pavel Laskov, University of Tuebingen.
 
 Homepage: https://github.com/srndic/mimicus
 
@@ -14,85 +16,91 @@ Learning-Based Classifier: A Case Study. IEEE Symposium on
 Security and Privacy, 2014.
 
 Mimicus consists of a reusable Python library (in the directory 
-mimicus/) and code for the reproduction of experiments described in 
-the paper (reproduction/). 
+``mimicus/``) and code for the reproduction of experiments described in 
+the paper (``reproduction/``). 
 
 
 Installation and Setup
 =======================
 
 Mimicus was developed in Python 2.7. Only the library files (the 
-mimicus/ directory) are installed, code and data required for 
-experiment reproduction (the reproduction/ directory) are 
+``mimicus/`` directory) are installed, code and data required for 
+experiment reproduction (the ``reproduction/`` directory) are 
 not installed. 
 
 Before proceeding, please make sure you have a recent version of 
-setuptools (>= 3.1): 
-	$> pip install --upgrade setuptools
+``setuptools`` (>= 3.1)::
 
-You can install Mimicus directly from its Git repository.
+    $> pip install --upgrade setuptools
 
-	$> git clone https://github.com/srndic/mimicus.git
-	$> cd mimicus
-	$> python setup.py develop --user
+You can install Mimicus directly from its Git repository::
+
+    $> git clone https://github.com/srndic/mimicus.git
+    $> cd mimicus
+    $> python setup.py develop --user
 
 This will install the Mimicus library for the current user and 
 does not require administrative privileges. It will just create 
 a link in the user's site-packages directory, usually 
-~/.local/lib/python2.7/site-packages, to the Mimicus directory. 
+``~/.local/lib/python2.7/site-packages``, to the Mimicus directory. 
 That way, any modifications you make to Mimicus code will be 
 immediately visible to any code importing Mimicus, so there is 
 no need for reinstallation. Furthermore, because the code remains 
 in the local git repository, you can easily contribute your great 
-new features and bugfixes. Omit "--user" to install system-wide.
+new features and bugfixes. Omit "``--user``" to install system-wide.
 
-Alternatively, you can create a Python egg file:
-	$> python setup.py bdist_egg
+Alternatively, you can create a Python egg file::
 
-and install it for your user: 
-	$> easy_install --user dist/mimicus-*.egg
+    $> python setup.py bdist_egg
 
-Omit "--user" to install system-wide.
+and install it for your user::
 
-To uninstall Mimicus, type:
-	$> python setup.py develop --uninstall --user
+    $> easy_install --user dist/mimicus-*.egg
 
-Omit "--user" to uninstall a system-wide installation.
+Omit "``--user``" to install system-wide.
+
+To uninstall Mimicus, type::
+
+    $> python setup.py develop --uninstall --user
+
+Omit "``--user``" to uninstall a system-wide installation.
 
 
 Required Dependencies
 ----------------------
 
 The following third-party Python libraries are required:
- - numpy >= 1.6.1
- - scikit_learn >= 0.14.1
- - scipy >= 0.9.0
 
-They will be automatically installed by setuptools or you can 
-install them manually using pip:
-	$> pip install numpy
-	$> pip install scikit_learn
+- ``numpy`` >= 1.6.1
+- ``scikit_learn`` >= 0.14.1
+- ``scipy`` >= 0.9.0
 
-There might be problems with scipy installation if you do not already 
-have BLAS installed. You can install scipy by following the directions 
-here: http://www.scipy.org/install.html
+They will be automatically installed by ``setuptools`` or you can 
+install them manually using ``pip``::
+
+    $ pip install numpy
+    $ pip install scikit_learn
+
+There might be problems with ``scipy`` installation if you do not 
+already have ``BLAS`` installed. You can install ``scipy`` by following 
+these `directions <http://www.scipy.org/install.html>`_.
 
 
 Optional Dependencies
 -----------------------
 
-Mimicus provides two different implementations of the RandomForest 
+Mimicus provides two different implementations of the Random Forest 
 classifier: 
 
-1. R_randomForest, using the randomForest package for the R programming 
-   language, and 
-2. the RandomForestClassifier class of scikit_learn. 
+1. ``R_randomForest``, using the ``randomForest`` package for the R 
+   programming language, and 
+2. the ``RandomForestClassifier`` class of ``scikit_learn``. 
 
-If you wish to use the former, please install R, its randomForest 
-package and the rpy2 Python library. Otherwise, the scikit_learn 
-implementation will be used as a fallback. The R version is maintained 
-because it is the one used by PDFrate. 
-The mimicus.classifiers.RandomForest module decides during runtime 
+If you wish to use the former, please install R, its ``randomForest`` 
+package and the ``rpy2`` Python library. Otherwise, the 
+``scikit_learn`` implementation will be used as a fallback. The R 
+version is maintained because it is the one used by ``PDFrate``. 
+The ``mimicus.classifiers.RandomForest`` module decides during runtime 
 which implementation to use, depending on whether you have the R 
 implementation installed or not.
 
@@ -101,47 +109,48 @@ Assembling the Required Datasets
 ----------------------------------
 
 Mimicus ships with all datasets required for training (the only
-exception are the malicious attack files; see subsection 
-"Attack Files" in the section "Reproduction of Experiments"). 
+exception are the malicious attack files; see 
+`Attack Files`_. 
 
 The files themselves are not shipped, only their feature vectors. 
-You can find them as CSV files in reproduction/data. The shipped 
+You can find them as CSV files in ``data/``. The shipped 
 CSV files are used to assemble a set of other datasets that 
 consist of the same files and are not shipped in order to reduce 
 redundancy in the repository. 
 
-Please run the reproduction/prepare_datasets.py script to create 
-these datasets: 
-	$> python reproduction/prepare_datasets.py
+Please run the ``reproduction/prepare_datasets.py`` script to create 
+these datasets::
+
+    $> python reproduction/prepare_datasets.py
 
 Running this script will also generate a configuration file 
-in the reproduction/ directory; see section "Configuration Files".
+in the ``reproduction/`` directory; see `Configuration Files`_.
 
 
 Setting up PDFrate Submissions
 -------------------------------
 
-Before submitting files to PDFrate, please read the policies:
-http://pdfrate.com/policies
+Before submitting files to ``PDFrate``, please read the `policies
+<http://pdfrate.com/policies>`_.
 
-In order to respect the PDFrate policies and minimize the number 
+In order to respect the ``PDFrate`` policies and minimize the number 
 of submissions, submissions are scheduled to run periodically and 
-individually, and PDFrate's replies are cached. 
+individually, and ``PDFrate``'s replies are cached. 
 
 New submissions are stored as JSON files in a query directory. The 
-script mimicus/bin/pdfratequeryscheduler.py runs periodically and 
+script ``mimicus/bin/pdfratequeryscheduler.py`` runs periodically and 
 submits the query with the highest priority or, if there are 
 multiple, the oldest one. The next time it runs, the script will 
-query PDFrate to check any pending queries and save the reply, 
+query ``PDFrate`` to check any pending queries and save the reply, 
 if it is ready, into the replies directory. The reply remains 
 in the replies directory and is subsequently returned every time 
-a script submits the same file to PDFrate, i.e., there is no 
+a script submits the same file to ``PDFrate``, i.e., there is no 
 danger of multiple submission. 
 
 In order for this to work, please schedule the submission script to 
 run in regular time intervals (e.g, using cron) and set up the 
 query and reply directories in the Mimicus configuration file 
-(see section "Configuration Files").
+(see `Configuration Files`).
 
 
 Reproduction of Experiments
@@ -157,12 +166,12 @@ Attack Files
 
 Files from the Contagio dataset were used in the experiments 
 described in the paper and we cannot distribute them. They are 
-available here:
-http://contagiodump.blogspot.de/2010/08/malicious-documents-archive-for.html
+available `here 
+<http://contagiodump.blogspot.de/2010/08/malicious-documents-archive-for.html>`_.
 
-The attack files comprise the dataset called Attack. A full list 
-of files in the Attack dataset can be found in 
-reproduction/data/attack.list. They can be found under the same 
+The attack files comprise the dataset called ``Attack``. A full list 
+of files in the ``Attack`` dataset can be found in 
+``data/attack.list``. They can be found under the same 
 names in the Contagio repositories. 
 
 If you wish to run the attacks using a different set of malicious 
@@ -173,32 +182,34 @@ your own list.
 Running Experiments
 --------------------------
 
-Experiments can be reproduced by running the scripts F.py, FC.py, 
-FT.py and FTC.py, one per attack scenario, in the reproduction/
+Experiments can be reproduced by running the scripts ``F.py``, 
+``FC.py``, ``FT.py`` and ``FTC.py``, one per attack scenario, 
+in the ``reproduction/``
 directory. Running an experiment will train the model used in that 
 scenario if necessary and run an attack of your choice. You can 
 provide an output directory in which the resulting attack files 
-should be saved. Example:
-	$> mkdir F-mimicry; python reproduction/F.py F-mimicry mimicry
+should be saved. Example::
 
-Make sure you run the reproduction/prepare_datasets.py script 
-before any attack (see subsection "Assembling the Required 
-Datasets" in the section "Installation and Setup").
+    $> mkdir F-mimicry
+    $> python reproduction/F.py F-mimicry mimicry
+
+Make sure you run the ``reproduction/prepare_datasets.py`` script 
+before any attack (see `Assembling the Required Datasets`_).
 
 
 Submitting Files to PDFrate
 -----------------------------
 
-Before submitting files to PDFrate, please read the policies:
-http://pdfrate.com/policies
+Before submitting files to ``PDFrate``, please read the `policies
+<http://pdfrate.com/policies>`_.
 
 You can submit a directory of PDF files or PDF files listed in a 
-text file using the reproduction/pdfrate_submitter.py script. 
+text file using the ``reproduction/pdfrate_submitter.py`` script. 
 To print submission results when they are ready, use the 
-reproduction/pdfrate_report.py script. 
+``reproduction/pdfrate_report.py`` script. 
 
 Refer to section "Setting up PDFrate Submissions" if you haven't 
-already configured PDFrate submissions.
+already configured ``PDFrate`` submissions.
 
 
 Configuration Files
@@ -206,43 +217,44 @@ Configuration Files
 
 There are two configuration files in this project: one for the 
 Mimicus library and the other for the reproduction code. Both 
-files use the same INI-file-like syntax: 
-http://docs.python.org/2.7/library/configparser.html
+files use the same `INI-file-like syntax 
+<http://docs.python.org/2.7/library/configparser.html>`_.
 
 
 Mimicus Library Configuration File
 -----------------------------------
 
-The first time you run "from mimicus import config" (e.g., when 
-you invoke the reproduction/prepare_datasets.py script), the 
-directory ~/.mimicus will be created with the configuration file 
-mimicus.conf inside. Use it to customize your library installation. 
-An explanation of the options is in the mimicus/default.conf file. 
+The first time you run ``from mimicus import config`` (e.g., when 
+you invoke the ``reproduction/prepare_datasets.py`` script), the 
+directory ``~/.mimicus`` will be created with the configuration file 
+``mimicus.conf`` inside. Use it to customize your library installation. 
+An explanation of the options is in the ``mimicus/default.conf`` file. 
 
 
 Reproduction Configuration File
 -----------------------------------
 
-The first time you run the reproduction/prepare_datasets.py script, 
-the configuration file reproduction/custom.conf will be created. 
+The first time you run the ``reproduction/prepare_datasets.py`` script, 
+the configuration file ``reproduction/custom.conf`` will be created. 
 Use it to customize the execution of experiments. An explanation of 
-the options is in the reproduction/default.conf file. 
+the options is in the ``reproduction/default.conf`` file. 
 
 
 Project layout
 ===========================
 
-mimicus/	- Python package mimicus (library)
-mimicus/attacks/	- Implementations of attack methods
-mimicus/bin/	- Scripts
-mimicus/classifiers/	- Implementations of classifiers
-mimicus/data/	- Data files required for testing the library
-mimicus/test/	- Code for testing the library
-mimicus/tools/	- Code for feature extraction, PDFrate submission, etc.
+- ``mimicus/``	- Python package mimicus (library)
+- ``mimicus/attacks/``	- Implementations of attack methods
+- ``mimicus/bin/``	- Scripts
+- ``mimicus/classifiers/``	- Implementations of classifiers
+- ``mimicus/data/``	- Data files required for testing the library
+- ``mimicus/test/``	- Code for testing the library
+- ``mimicus/tools/``	- Code for feature extraction, etc.
 
-reproduction/	- Python code for experiment reproduction
-data/	- Data files required to reproduce the experiments
+- ``reproduction/``	- Python code for experiment reproduction
+- ``data/``	- Data files required to reproduce the experiments
 
-COPYING	- Software license
-MANIFEST.in	- Python setuptools configuration
-README	- This file
+- ``COPYING``	- Software license
+- ``MANIFEST.in``	- Python setuptools configuration
+- ``README``	- This file
+
