@@ -2,10 +2,7 @@
 Mimicus v1.0
 ================
 
------------------------------------------------------
-A Python library for adversarial classifier evasion. 
------------------------------------------------------
-
+A Python library for adversarial classifier evasion by 
 Nedim Srndic and Pavel Laskov, University of Tuebingen.
 
 Homepage: https://github.com/srndic/mimicus
@@ -74,6 +71,7 @@ Required Dependencies
 
 The following third-party Python libraries are required:
 
+- ``matplotlib`` >= 1.1.1rc
 - ``numpy`` >= 1.6.1
 - ``scikit_learn`` >= 0.14.1
 - ``scipy`` >= 0.9.0
@@ -81,6 +79,7 @@ The following third-party Python libraries are required:
 They will be automatically installed by ``setuptools`` or you can 
 install them manually using ``pip``::
 
+    pip install matplotlib
     pip install numpy
     pip install scikit_learn
 
