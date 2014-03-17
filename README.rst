@@ -22,8 +22,9 @@ Mimicus consists of a reusable Python library (in the directory
 the paper (``reproduction/``). 
 
 
+-----------------------------------------------------
 Installation and Setup
-=======================
+-----------------------------------------------------
 
 Mimicus was developed in Python 2.7. Only the library files (the 
 ``mimicus/`` directory) are installed, code and data required for 
@@ -33,13 +34,13 @@ not installed.
 Before proceeding, please make sure you have a recent version of 
 ``setuptools`` (>= 3.1)::
 
-    $> pip install --upgrade setuptools
+    pip install --upgrade setuptools
 
 You can install Mimicus directly from its Git repository::
 
-    $> git clone https://github.com/srndic/mimicus.git
-    $> cd mimicus
-    $> python setup.py develop --user
+    git clone https://github.com/srndic/mimicus.git
+    cd mimicus
+    python setup.py develop --user
 
 This will install the Mimicus library for the current user and 
 does not require administrative privileges. It will just create 
@@ -53,23 +54,23 @@ new features and bugfixes. Omit "``--user``" to install system-wide.
 
 Alternatively, you can create a Python egg file::
 
-    $> python setup.py bdist_egg
+    python setup.py bdist_egg
 
 and install it for your user::
 
-    $> easy_install --user dist/mimicus-*.egg
+    easy_install --user dist/mimicus-*.egg
 
 Omit "``--user``" to install system-wide.
 
 To uninstall Mimicus, type::
 
-    $> python setup.py develop --uninstall --user
+    python setup.py develop --uninstall --user
 
 Omit "``--user``" to uninstall a system-wide installation.
 
 
 Required Dependencies
-----------------------
+===========================
 
 The following third-party Python libraries are required:
 
@@ -80,8 +81,8 @@ The following third-party Python libraries are required:
 They will be automatically installed by ``setuptools`` or you can 
 install them manually using ``pip``::
 
-    $ pip install numpy
-    $ pip install scikit_learn
+    pip install numpy
+    pip install scikit_learn
 
 There might be problems with ``scipy`` installation if you do not 
 already have ``BLAS`` installed. You can install ``scipy`` by following 
@@ -89,7 +90,7 @@ these `directions <http://www.scipy.org/install.html>`_.
 
 
 Optional Dependencies
------------------------
+===========================
 
 Mimicus provides two different implementations of the Random Forest 
 classifier: 
@@ -108,7 +109,7 @@ implementation installed or not.
 
 
 Assembling the Required Datasets
-----------------------------------
+====================================
 
 Mimicus ships with all datasets required for training (the only
 exception are the malicious attack files; see 
@@ -123,14 +124,14 @@ redundancy in the repository.
 Please run the ``reproduction/prepare_datasets.py`` script to create 
 these datasets::
 
-    $> python reproduction/prepare_datasets.py
+    python reproduction/prepare_datasets.py
 
 Running this script will also generate a configuration file 
 in the ``reproduction/`` directory; see `Configuration Files`_.
 
 
 Setting up PDFrate Submissions
--------------------------------
+====================================
 
 Before submitting files to ``PDFrate``, please read the `policies
 <http://pdfrate.com/policies>`_.
@@ -154,9 +155,9 @@ run in regular time intervals (e.g, using cron) and set up the
 query and reply directories in the Mimicus configuration file 
 (see `Configuration Files`_).
 
-
+-----------------------------------------------------
 Reproduction of Experiments
-=============================
+-----------------------------------------------------
 
 If you wish to reproduce the experiments described in the paper, 
 you will find that everything is included in this project except 
@@ -164,7 +165,7 @@ the malicious attack candidate files.
 
 
 Attack Files
--------------------------
+====================================
 
 Files from the Contagio dataset were used in the experiments 
 described in the paper and we cannot distribute them. They are 
@@ -182,7 +183,7 @@ your own list.
 
 
 Running Experiments
---------------------------
+====================================
 
 Experiments can be reproduced by running the scripts ``F.py``, 
 ``FC.py``, ``FT.py`` and ``FTC.py``, one per attack scenario, 
@@ -192,15 +193,15 @@ scenario if necessary and run an attack of your choice. You can
 provide an output directory in which the resulting attack files 
 should be saved. Example::
 
-    $> mkdir F-mimicry
-    $> python reproduction/F.py F-mimicry mimicry
+    mkdir F-mimicry
+    python reproduction/F.py F-mimicry mimicry
 
 Make sure you run the ``reproduction/prepare_datasets.py`` script 
 before any attack (see `Assembling the Required Datasets`_).
 
 
 Submitting Files to PDFrate
------------------------------
+====================================
 
 Before submitting files to ``PDFrate``, please read the `policies
 <http://pdfrate.com/policies>`_.
@@ -214,8 +215,9 @@ See `Setting up PDFrate Submissions`_ if you haven't
 already configured ``PDFrate`` submissions.
 
 
+-----------------------------------------------------
 Configuration Files
-============================
+-----------------------------------------------------
 
 There are two configuration files in this project: one for the 
 Mimicus library and the other for the reproduction code. Both 
@@ -224,7 +226,7 @@ files use the same `INI-file-like syntax
 
 
 Mimicus Library Configuration File
------------------------------------
+====================================
 
 The first time you run ``from mimicus import config`` (e.g., when 
 you invoke the ``reproduction/prepare_datasets.py`` script), the 
@@ -234,7 +236,7 @@ An explanation of the options is in the ``mimicus/default.conf`` file.
 
 
 Reproduction Configuration File
------------------------------------
+====================================
 
 The first time you run the ``reproduction/prepare_datasets.py`` script, 
 the configuration file ``reproduction/custom.conf`` will be created. 
@@ -242,8 +244,9 @@ Use it to customize the execution of experiments. An explanation of
 the options is in the ``reproduction/default.conf`` file. 
 
 
+-----------------------------------------------------
 Project layout
-===========================
+-----------------------------------------------------
 
 - ``mimicus/``	- Python package mimicus (library)
 - ``mimicus/attacks/``	- attack method implementations
@@ -261,8 +264,9 @@ Project layout
 - ``README``	- this file
 
 
+-----------------------------------------------------
 Licensing
-================
+-----------------------------------------------------
 
 Mimicus is free software: you can redistribute it and/or modify it 
 under the terms of the `GNU General Public License 
