@@ -11,9 +11,11 @@ Nedim Srndic and Pavel Laskov, University of Tuebingen.
 Homepage: https://github.com/srndic/mimicus
 
 Mimicus was used as the experimental platform for the paper:
-Nedim Srndic and Pavel Laskov. Practical Evasion of a 
-Learning-Based Classifier: A Case Study. IEEE Symposium on 
-Security and Privacy, 2014.
+
+Nedim Srndic and Pavel Laskov. **Practical Evasion of a 
+Learning-Based Classifier: A Case Study**. *IEEE Symposium on 
+Security and Privacy*, 2014 
+(`PDF <http://www.ra.cs.uni-tuebingen.de/mitarb/srndic/srndic-laskov-sp2014.pdf>`_).
 
 Mimicus consists of a reusable Python library (in the directory 
 ``mimicus/``) and code for the reproduction of experiments described in 
@@ -110,7 +112,7 @@ Assembling the Required Datasets
 
 Mimicus ships with all datasets required for training (the only
 exception are the malicious attack files; see 
-`Attack Files`_. 
+`Attack Files`_). 
 
 The files themselves are not shipped, only their feature vectors. 
 You can find them as CSV files in ``data/``. The shipped 
@@ -150,7 +152,7 @@ danger of multiple submission.
 In order for this to work, please schedule the submission script to 
 run in regular time intervals (e.g, using cron) and set up the 
 query and reply directories in the Mimicus configuration file 
-(see `Configuration Files`).
+(see `Configuration Files`_).
 
 
 Reproduction of Experiments
@@ -208,7 +210,7 @@ text file using the ``reproduction/pdfrate_submitter.py`` script.
 To print submission results when they are ready, use the 
 ``reproduction/pdfrate_report.py`` script. 
 
-Refer to section "Setting up PDFrate Submissions" if you haven't 
+See `Setting up PDFrate Submissions`_ if you haven't 
 already configured ``PDFrate`` submissions.
 
 
@@ -244,17 +246,27 @@ Project layout
 ===========================
 
 - ``mimicus/``	- Python package mimicus (library)
-- ``mimicus/attacks/``	- Implementations of attack methods
-- ``mimicus/bin/``	- Scripts
-- ``mimicus/classifiers/``	- Implementations of classifiers
-- ``mimicus/data/``	- Data files required for testing the library
-- ``mimicus/test/``	- Code for testing the library
-- ``mimicus/tools/``	- Code for feature extraction, etc.
+- ``mimicus/attacks/``	- attack method implementations
+- ``mimicus/bin/``	- scripts
+- ``mimicus/classifiers/``	- classifier implementations
+- ``mimicus/data/``	- data files required for testing the library
+- ``mimicus/test/``	- code for testing the library
+- ``mimicus/tools/``	- code for feature extraction, etc.
 
 - ``reproduction/``	- Python code for experiment reproduction
-- ``data/``	- Data files required to reproduce the experiments
+- ``data/``	- data files required to reproduce the experiments
 
-- ``COPYING``	- Software license
+- ``COPYING``	- software license
 - ``MANIFEST.in``	- Python setuptools configuration
-- ``README``	- This file
+- ``README``	- this file
+
+
+Licensing
+================
+
+Mimicus is free software: you can redistribute it and/or modify it 
+under the terms of the `GNU General Public License 
+<http://www.gnu.org/licenses/gpl.html>`_ as published by 
+the Free Software Foundation, either version 3 of the License, 
+or (at your option) any later version. 
 
