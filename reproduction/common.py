@@ -94,9 +94,12 @@ def learn_model(scenario_name):
 
 def gdkde_wrapper(ntuple):
     '''
-    A helper function to parallelize calls to mimicry().
+    A helper function to parallelize calls to gdkde().
     '''
-    return gdkde(*ntuple)
+    try:
+        return gdkde(*ntuple)
+    except Exception as e:
+        return e
 
 def attack_gdkde(scenario_name, output_dir, plot=False):
     '''
@@ -136,7 +139,7 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     # Subsample for faster execution
     ind_sample = random.sample(range(len(y_train)), 500)
     X_train = X_train[ind_sample, :]
-    y_train = y_train[ind_sample, :]
+    y_train = y_train[ind_sample]
     
     # Set parameters
     kde_reg = 10
@@ -151,8 +154,12 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     
     # Perform the attack
     pyplot.figure(1)
-    for (_, fseq, _, _, attack_file), original_file in \
+    for res, original_file in \
             zip(pool.imap(gdkde_wrapper, pool_args), malicious):
+        if isinstance(res, Exception):
+            print res
+            continue
+        (_, fseq, _, _, attack_file) = res
         sys.stdout.write('Processing file "{}":\n'.format(original_file))
         sys.stdout.write('  scores: {}\n'
                             .format(', '.join([str(s) for s in fseq])))
@@ -179,7 +186,10 @@ def mimicry_parallel(ntuple):
     '''
     A helper function to parallelize calls to mimicry().
     '''
-    return mimicry(*ntuple)
+    try:
+        return mimicry(*ntuple)
+    except Exception as e:
+        return e
 
 def attack_mimicry(scenario_name, output_dir, plot=False):
     '''
@@ -233,8 +243,12 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     
     # Perform the attack
     pyplot.figure(1)
-    for wolf_path, (target_path, mimic_path, mimic_score, wolf_score) in \
+    for wolf_path, res in \
             zip(wolves, pool.imap(mimicry_parallel, pool_args)):
+        if isinstance(res, Exception):
+            print res
+            continue
+        (target_path, mimic_path, mimic_score, wolf_score) = res
         sys.stdout.write('Modifying {path} [{score}]:\n'
                             .format(path=wolf_path, score=wolf_score))
         sys.stdout.write('  BEST: {path} [{score}]\n'
