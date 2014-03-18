@@ -92,6 +92,13 @@ def learn_model(scenario_name):
     # Save the model in the corresponding file
     classifier.save_model(scenario['model'])
 
+def attack_files_missing(attack_files):
+    sys.stderr.write('Unable to locate list of attack files {}. '
+                     .format(attack_files))
+    sys.stderr.write(('Please list the paths to your attack files in '
+                      'this file, one per line.\n'))
+    sys.exit()
+
 def gdkde_wrapper(ntuple):
     '''
     A helper function to parallelize calls to gdkde().
@@ -116,13 +123,11 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     # Load and print malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
-        sys.stderr.write('Unable to locate list of attack files {}. '
-                            .format(wolves))
-        sys.stderr.write(('Please list the paths to your attack files in '
-                          'this file, one per line.\n'))
-        sys.exit()
+        attack_files_missing(wolves)
     sys.stdout.write('Loading attack samples from "{}"\n'.format(wolves))
     malicious = utility.get_pdfs(wolves)
+    if not malicious:
+        attack_files_missing(wolves)
     
     # Load an SVM trained with scaled data
     scaler = pickle.load(open(
@@ -211,13 +216,11 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     # Load and print malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
-        sys.stderr.write('Unable to locate list of attack files {}. '
-                            .format(wolves))
-        sys.stderr.write(('Please list the paths to your attack files in '
-                          'this file, one per line.\n'))
-        sys.exit()
+        attack_files_missing(wolves)
     sys.stdout.write('Loading attack samples from file "{}"\n'.format(wolves))
-    wolves = sorted(utility.get_pdfs(wolves))
+    malicious = sorted(utility.get_pdfs(wolves))
+    if not malicious:
+        attack_files_missing(wolves)
     
     # Set up classifier
     classifier = 0
@@ -239,12 +242,12 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     
     # Set up multiprocessing
     pool = multiprocessing.Pool()
-    pool_args = [(wolf, targets, classifier, scaler) for wolf in wolves]
+    pool_args = [(mal, targets, classifier, scaler) for mal in malicious]
     
     # Perform the attack
     pyplot.figure(1)
     for wolf_path, res in \
-            zip(wolves, pool.imap(mimicry_parallel, pool_args)):
+            zip(malicious, pool.imap(mimicry_parallel, pool_args)):
         if isinstance(res, Exception):
             print res
             continue
@@ -272,3 +275,4 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
         pyplot.savefig(plot, dpi=300)
     else:
         pyplot.show()
+

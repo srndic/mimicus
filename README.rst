@@ -101,7 +101,7 @@ classifier:
 If you wish to use the former, please install R, its ``randomForest`` 
 package and the ``rpy2`` Python library. Otherwise, the 
 ``scikit_learn`` implementation will be used as a fallback. The R 
-version is maintained because it is the one used by ``PDFrate``. 
+version is maintained because it is the one used by PDFrate. 
 The ``mimicus.classifiers.RandomForest`` module decides during runtime 
 which implementation to use, depending on whether you have the R 
 implementation installed or not.
@@ -132,21 +132,21 @@ in the ``reproduction/`` directory; see `Configuration Files`_.
 Setting up PDFrate Submissions
 ====================================
 
-Before submitting files to ``PDFrate``, please read the `policies
+Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
 
-In order to respect the ``PDFrate`` policies and minimize the number 
+In order to respect the PDFrate policies and minimize the number 
 of submissions, submissions are scheduled to run periodically and 
-individually, and ``PDFrate``'s replies are cached. 
+individually, and PDFrate's replies are cached. 
 
 New submissions are stored as JSON files in a query directory. The 
 script ``mimicus/bin/pdfratequeryscheduler.py`` runs periodically and 
 submits the query with the highest priority or, if there are 
 multiple, the oldest one. The next time it runs, the script will 
-query ``PDFrate`` to check any pending queries and save the reply, 
+query PDFrate to check any pending queries and save the reply, 
 if it is ready, into the replies directory. The reply remains 
 in the replies directory and is subsequently returned every time 
-a script submits the same file to ``PDFrate``, i.e., there is no 
+a script submits the same file to PDFrate, i.e., there is no 
 danger of multiple submission. 
 
 In order for this to work, please schedule the submission script to 
@@ -202,7 +202,7 @@ before any attack (see `Assembling the Required Datasets`_).
 Submitting Files to PDFrate
 ====================================
 
-Before submitting files to ``PDFrate``, please read the `policies
+Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
 
 You can submit a directory of PDF files or PDF files listed in a 
@@ -211,7 +211,7 @@ To print submission results when they are ready, use the
 ``reproduction/pdfrate_report.py`` script. 
 
 See `Setting up PDFrate Submissions`_ if you haven't 
-already configured ``PDFrate`` submissions.
+already configured PDFrate submissions.
 
 
 -----------------------------------------------------
