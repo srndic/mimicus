@@ -27,7 +27,7 @@ Created on March 5, 2014.
 from argparse import ArgumentParser
 import sys
 
-from common import attack_gdkde, attack_mimicry, learn_model
+from common import attack_gdkde, attack_mimicry
 
 def main():
     attacks = ['mimicry', 'gdkde']
@@ -38,9 +38,6 @@ def main():
     parser.add_argument('attack', choices=attacks, nargs=1, help='Which attack to run')
     parser.add_argument('--plot', default=False, help='Where to save plot (file name)')
     args = parser.parse_args()
-    
-    # If the model file does not exist, create one
-    learn_model(scenario_name)
     
     # Perform the chosen attack
     args.attack = args.attack[0]

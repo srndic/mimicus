@@ -18,7 +18,7 @@ along with Mimicus.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
 common.py
 
-Code common to all scenarios.
+Code common to all _scenarios.
 
 Created on March 5, 2014.
 '''
@@ -31,18 +31,19 @@ import shutil
 import sys
 
 from matplotlib import pyplot
-
-import config
+from mimicus import config as _ # Just to create the configuration file
 from mimicus.attacks.mimicry import mimicry
 from mimicus.attacks.gdkde import gdkde
 from mimicus.classifiers.RandomForest import RandomForest
 from mimicus.classifiers.sklearn_SVC import sklearn_SVC
 from mimicus.tools import datasets, utility
 
+import config
+
 '''
 A dictionary encoding adversarial knowledge for every scenario.
 '''
-scenarios = \
+_scenarios = \
 {'F' : {'classifier' : 'svm', 
         'model' : config.get('experiments', 'surrogate_scaled_svm_model'), 
         'targets' : config.get('experiments', 'surrogate_attack_targets'),
@@ -60,12 +61,12 @@ scenarios = \
          'targets' : config.get('experiments', 'contagio_attack_targets'), 
          'training' : config.get('datasets', 'contagio')},}
 
-def learn_model(scenario_name):
+def _learn_model(scenario_name):
     '''
     Learns a classifier model for the specified scenario if one does 
     not already exist. 
     '''
-    scenario = scenarios[scenario_name]
+    scenario = _scenarios[scenario_name]
     if path.exists(scenario['model']):
         return
     
@@ -92,14 +93,93 @@ def learn_model(scenario_name):
     # Save the model in the corresponding file
     classifier.save_model(scenario['model'])
 
-def attack_files_missing(attack_files):
+def _attack_files_missing(attack_files):
     sys.stderr.write('Unable to locate list of attack files {}. '
                      .format(attack_files))
     sys.stderr.write(('Please list the paths to your attack files in '
                       'this file, one per line.\n'))
     sys.exit()
 
-def gdkde_wrapper(ntuple):
+def _initialize():
+    '''
+    Assembles missing datasets and learns missing models. 
+    '''
+    from mimicus.tools.datasets import standardize_csv
+    
+    def merge_CSVs(csv1, csv2, out):
+        '''
+        Merges two CSV files into out. Skips any header or comment 
+        lines in the second file.
+        '''
+        with open(out, 'wb+') as f:
+            # Copy csv1
+            f.write(open(csv1).read())
+            # Skip junk in csv2
+            with open(csv2) as csv2in:
+                l = 'a'
+                while l:
+                    l = csv2in.readline()
+                    if l and l[:4].lower() in ('true', 'fals'):
+                        f.write(l)
+    
+    if not path.exists(config.get('datasets', 'contagio')):
+        print 'Creating the contagio dataset...'
+        merge_CSVs(config.get('datasets', 'contagio_ben'), 
+                   config.get('datasets', 'contagio_mal'), 
+                   config.get('datasets', 'contagio'))
+    
+    if not path.exists(config.get('datasets', 'contagio_full')):
+        print 'Creating the contagio-full dataset...'
+        merge_CSVs(config.get('datasets', 'contagio'), 
+                   config.get('datasets', 'contagio_nopdfrate'), 
+                   config.get('datasets', 'contagio_full'))
+    
+    if not path.exists(config.get('datasets', 'contagio_scaler')):
+        print 'Creating the contagio-scaled-full dataset...'
+        scaler = standardize_csv(config.get('datasets', 'contagio_full'), 
+                                 config.get('datasets', 'contagio_scaled_full'))
+        pickle.dump(scaler, open(config.get('datasets', 'contagio_scaler'), 
+                                 'wb+'))
+    
+    if not path.exists(config.get('datasets', 'contagio_scaled')):
+        print 'Creating the contagio-scaled dataset...'
+        standardize_csv(config.get('datasets', 'contagio'), 
+                                    config.get('datasets', 'contagio_scaled'),
+                                    scaler)
+    
+    if not path.exists(config.get('datasets', 'contagio_test')):
+        print 'Creating the contagio-test dataset...'
+        shutil.copy(config.get('datasets', 'contagio_nopdfrate'),
+                    config.get('datasets', 'contagio_test'))
+    
+    if not path.exists(config.get('datasets', 'contagio_scaled_test')):
+        print 'Creating the contagio-scaled-test dataset...'
+        standardize_csv(config.get('datasets', 'contagio_test'), 
+                        config.get('datasets', 'contagio_scaled_test'),
+                        scaler)
+    
+    if not path.exists(config.get('datasets', 'surrogate')):
+        print 'Creating the surrogate dataset...'
+        merge_CSVs(config.get('datasets', 'google_ben'), 
+                   config.get('datasets', 'virustotal_mal'), 
+                   config.get('datasets', 'surrogate'))
+    
+    if not path.exists(config.get('datasets', 'surrogate_scaled')):
+        print 'Creating the surrogate-scaled dataset...'
+        standardize_csv(config.get('datasets', 'surrogate'), 
+                        config.get('datasets', 'surrogate_scaled'),
+                        scaler)
+    
+    print 'Training the model for scenario F...'
+    _learn_model('F')
+    print 'Training the model for scenario FC...'
+    _learn_model('FC')
+    print 'Training the model for scenario FT...'
+    _learn_model('FT')
+    print 'Training the model for scenario FTC...'
+    _learn_model('FTC')
+
+def _gdkde_wrapper(ntuple):
     '''
     A helper function to parallelize calls to gdkde().
     '''
@@ -115,7 +195,8 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     to True, saves the resulting plot into the specified file, otherwise 
     shows the plot in a window. 
     '''
-    scenario = scenarios[scenario_name]
+    _initialize()
+    scenario = _scenarios[scenario_name]
     output_dir = path.abspath(output_dir)
     utility.mkdir_p(output_dir)
     # Make results reproducible
@@ -123,11 +204,11 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     # Load and print malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
-        attack_files_missing(wolves)
+        _attack_files_missing(wolves)
     sys.stdout.write('Loading attack samples from "{}"\n'.format(wolves))
     malicious = utility.get_pdfs(wolves)
     if not malicious:
-        attack_files_missing(wolves)
+        _attack_files_missing(wolves)
     
     # Load an SVM trained with scaled data
     scaler = pickle.load(open(
@@ -160,7 +241,7 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     # Perform the attack
     pyplot.figure(1)
     for res, original_file in \
-            zip(pool.imap(gdkde_wrapper, pool_args), malicious):
+            zip(pool.imap(_gdkde_wrapper, pool_args), malicious):
         if isinstance(res, Exception):
             print res
             continue
@@ -187,7 +268,7 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     else:
         pyplot.show()
 
-def mimicry_parallel(ntuple):
+def _mimicry_parallel(ntuple):
     '''
     A helper function to parallelize calls to mimicry().
     '''
@@ -203,7 +284,8 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     to True, saves the resulting plot into the specified file, otherwise 
     shows the plot in a window. 
     '''
-    scenario = scenarios[scenario_name]
+    _initialize()
+    scenario = _scenarios[scenario_name]
     output_dir = path.abspath(output_dir)
     utility.mkdir_p(output_dir)
     # Make results reproducible
@@ -216,11 +298,11 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     # Load and print malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
-        attack_files_missing(wolves)
+        _attack_files_missing(wolves)
     sys.stdout.write('Loading attack samples from file "{}"\n'.format(wolves))
     malicious = sorted(utility.get_pdfs(wolves))
     if not malicious:
-        attack_files_missing(wolves)
+        _attack_files_missing(wolves)
     
     # Set up classifier
     classifier = 0
@@ -247,7 +329,7 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     # Perform the attack
     pyplot.figure(1)
     for wolf_path, res in \
-            zip(malicious, pool.imap(mimicry_parallel, pool_args)):
+            zip(malicious, pool.imap(_mimicry_parallel, pool_args)):
         if isinstance(res, Exception):
             print res
             continue
@@ -275,4 +357,3 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
         pyplot.savefig(plot, dpi=300)
     else:
         pyplot.show()
-

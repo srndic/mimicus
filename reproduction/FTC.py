@@ -27,7 +27,7 @@ Created on March 5, 2014.
 from argparse import ArgumentParser
 import sys
 
-from common import attack_mimicry, learn_model
+from common import attack_mimicry
 
 def main():
     scenario_name = 'FTC'
@@ -36,9 +36,6 @@ def main():
     parser.add_argument('output_dir', help='Where to save best mimics')
     parser.add_argument('--plot', default=False, help='Where to save plot (file name)')
     args = parser.parse_args()
-    
-    # If the model file does not exist, create one
-    learn_model(scenario_name)
     
     # Perform the attack
     attack_mimicry(scenario_name, args.output_dir, args.plot)

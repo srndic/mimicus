@@ -230,7 +230,7 @@ def mimicry(sheep_fname, wolf_fname):
     os.remove(mimic['path'])
     return mimic['feats']
 
-def mimicry_parallel(args):
+def _mimicry_parallel(args):
     '''
     Helper function for calling the mimicry function in parallel.
     '''
@@ -259,7 +259,7 @@ def our_mimicry(train_data, train_labels, test_data, test_labels, train_fnames):
             wolf_is = random.sample(mal_train_is, total)
             
             pool_args = [(train_fnames[random.choice(ben_train_is)], train_fnames[wolf_i]) for wolf_i in wolf_is]
-            for mimic, wolf_i in zip(pool.imap(mimicry_parallel, pool_args), wolf_is):
+            for mimic, wolf_i in zip(pool.imap(_mimicry_parallel, pool_args), wolf_is):
                 new_data[wolf_i] = mimic
             
             acc = evaluate_classifier(new_data, train_labels, [test_data, mimicry_data], [test_labels, mimicry_labels])
@@ -269,9 +269,9 @@ def our_mimicry(train_data, train_labels, test_data, test_labels, train_fnames):
 def main():
     random.seed(0)
     parser = ArgumentParser()
+    parser.add_argument('experiment', type=str, choices=['table10', 'table12', 'our_mimicry'], nargs=1, help='Which experiment to run')
     parser.add_argument('-f', '--with-files', default=False, help='Test on PDFs instead of feature vectors for Table 10', action='store_true')
     parser.add_argument('-r', '--realistic-feats', default=False, help='Only generate realistic feature values (within bounds) for Table 10', action='store_true')
-    parser.add_argument('-e', '--experiment', type=str, choices=['table10', 'table12', 'our_mimicry'], nargs=1, help='Which experiment to run')
     args = parser.parse_args()
     
     args.experiment = args.experiment[0]

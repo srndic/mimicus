@@ -69,6 +69,10 @@ Omit "``--user``" to uninstall a system-wide installation.
 Required Dependencies
 ===========================
 
+Mimicus requires the ``curl`` and ``perl`` executables to be installed::
+
+    apt-get install curl perl
+ 
 The following third-party Python libraries are required:
 
 - ``matplotlib`` >= 1.1.1rc
@@ -105,28 +109,6 @@ version is maintained because it is the one used by PDFrate.
 The ``mimicus.classifiers.RandomForest`` module decides during runtime 
 which implementation to use, depending on whether you have the R 
 implementation installed or not.
-
-
-Assembling the Required Datasets
-====================================
-
-Mimicus ships with all datasets required for training (the only
-exception are the malicious attack files; see 
-`Attack Files`_). 
-
-The files themselves are not shipped, only their feature vectors. 
-You can find them as CSV files in ``data/``. The shipped 
-CSV files are used to assemble a set of other datasets that 
-consist of the same files and are not shipped in order to reduce 
-redundancy in the repository. 
-
-Please run the ``reproduction/prepare_datasets.py`` script to create 
-these datasets::
-
-    python reproduction/prepare_datasets.py
-
-Running this script will also generate a configuration file 
-in the ``reproduction/`` directory; see `Configuration Files`_.
 
 
 Setting up PDFrate Submissions
@@ -195,9 +177,6 @@ should be saved. Example::
     mkdir F-mimicry
     python reproduction/F.py F-mimicry mimicry
 
-Make sure you run the ``reproduction/prepare_datasets.py`` script 
-before any attack (see `Assembling the Required Datasets`_).
-
 
 Submitting Files to PDFrate
 ====================================
@@ -227,8 +206,7 @@ files use the same `INI-file-like syntax
 Mimicus Library Configuration File
 ====================================
 
-The first time you run ``from mimicus import config`` (e.g., when 
-you invoke the ``reproduction/prepare_datasets.py`` script), the 
+The first time you run an attack, the 
 directory ``~/.mimicus`` will be created with the configuration file 
 ``mimicus.conf`` inside. Use it to customize your library installation. 
 An explanation of the options is in the ``mimicus/default.conf`` file. 
@@ -237,7 +215,7 @@ An explanation of the options is in the ``mimicus/default.conf`` file.
 Reproduction Configuration File
 ====================================
 
-The first time you run the ``reproduction/prepare_datasets.py`` script, 
+The first time you run an attack, 
 the configuration file ``reproduction/custom.conf`` will be created. 
 Use it to customize the execution of experiments. An explanation of 
 the options is in the ``reproduction/default.conf`` file. 

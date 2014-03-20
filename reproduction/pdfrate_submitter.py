@@ -48,7 +48,7 @@ def main():
     for i, pdf in enumerate(pdfs):
         handler.submit_query(pdf, get_metadata=True, priority=args.priority)
         sys.stderr.write('{d} File {i}/{n}: {f} {d}\n'
-                         .format(d='-'*10, i=i, n=len(pdfs), f=pdf))
+                         .format(d='-'*10, i=i+1, n=len(pdfs), f=pdf))
     return 0
 
 if __name__ == "__main__":
