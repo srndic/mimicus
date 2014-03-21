@@ -124,7 +124,7 @@ individually, and PDFrate's replies are cached.
 New submissions are stored as JSON files in a query directory. The 
 script ``mimicus/bin/pdfratequeryscheduler.py`` runs periodically and 
 submits the query with the highest priority or, if there are 
-multiple, the oldest one. The next time it runs, the script will 
+multiple, the oldest one. The script will then 
 query PDFrate to check any pending queries and save the reply, 
 if it is ready, into the replies directory. The reply remains 
 in the replies directory and is subsequently returned every time 
@@ -166,16 +166,13 @@ your own list.
 Running Experiments
 ====================================
 
-Experiments can be reproduced by running the scripts ``F.py``, 
-``FC.py``, ``FT.py`` and ``FTC.py``, one per attack scenario, 
-in the ``reproduction/``
-directory. Running an experiment will train the model used in that 
-scenario if necessary and run an attack of your choice. You can 
-provide an output directory in which the resulting attack files 
-should be saved. Example::
+Experiments can be reproduced by running these scripts in the 
+``reproduction/`` directory, one per attack scenario::
 
-    mkdir F-mimicry
-    python reproduction/F.py F-mimicry mimicry
+    python reproduction/F.py
+    python reproduction/FC.py
+    python reproduction/FT.py
+    python reproduction/FTC.py
 
 
 Submitting Files to PDFrate
@@ -185,9 +182,15 @@ Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
 
 You can submit a directory of PDF files or PDF files listed in a 
-text file using the ``reproduction/pdfrate_submitter.py`` script. 
+text file using the ``reproduction/pdfrate_submitter.py`` script, 
+e.g.::
+
+    python reproduction/pdfrate_submitter.py results/F_mimicry
+
 To print submission results when they are ready, use the 
-``reproduction/pdfrate_report.py`` script. 
+``reproduction/pdfrate_report.py`` script, e.g.:: 
+
+    python reproduction/pdfrate_report.py results/F_mimicry
 
 See `Setting up PDFrate Submissions`_ if you haven't 
 already configured PDFrate submissions.
@@ -209,7 +212,7 @@ Mimicus Library Configuration File
 The first time you run an attack, the 
 directory ``~/.mimicus`` will be created with the configuration file 
 ``mimicus.conf`` inside. Use it to customize your library installation. 
-An explanation of the options is in the ``mimicus/default.conf`` file. 
+Options are described in the ``mimicus/default.conf`` file. 
 
 
 Reproduction Configuration File
@@ -217,28 +220,30 @@ Reproduction Configuration File
 
 The first time you run an attack, 
 the configuration file ``reproduction/custom.conf`` will be created. 
-Use it to customize the execution of experiments. An explanation of 
-the options is in the ``reproduction/default.conf`` file. 
+Use it to customize the execution of experiments. Options are 
+described in the ``reproduction/default.conf`` file. 
 
 
 -----------------------------------------------------
 Project layout
 -----------------------------------------------------
 
-- ``mimicus/``	- Python package mimicus (library)
-- ``mimicus/attacks/``	- attack method implementations
-- ``mimicus/bin/``	- scripts
-- ``mimicus/classifiers/``	- classifier implementations
-- ``mimicus/data/``	- data files required for testing the library
-- ``mimicus/test/``	- code for testing the library
-- ``mimicus/tools/``	- code for feature extraction, etc.
+- ``mimicus/`` - Python package mimicus (library)
+- ``mimicus/attacks/`` - attack method implementations
+- ``mimicus/bin/`` - scripts
+- ``mimicus/classifiers/`` - classifier implementations
+- ``mimicus/data/`` - data files required for testing the library
+- ``mimicus/test/`` - code for testing the library
+- ``mimicus/tools/`` - code for feature extraction, etc.
 
-- ``reproduction/``	- Python code for experiment reproduction
-- ``data/``	- data files required to reproduce the experiments
+- ``results`` - attack results will be saved in this directory
 
-- ``COPYING``	- software license
-- ``MANIFEST.in``	- Python setuptools configuration
-- ``README``	- this file
+- ``reproduction/`` - Python code for experiment reproduction
+- ``data/`` - data files required to reproduce the experiments
+
+- ``COPYING`` - software license
+- ``MANIFEST.in`` - Python setuptools configuration
+- ``README`` - this file
 
 
 -----------------------------------------------------

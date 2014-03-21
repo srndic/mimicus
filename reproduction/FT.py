@@ -30,21 +30,16 @@ import sys
 from common import attack_gdkde, attack_mimicry
 
 def main():
-    attacks = ['mimicry', 'gdkde']
-    scenario_name = 'FT'
     # Parse command-line arguments
     parser = ArgumentParser()
-    parser.add_argument('output_dir', help='Where to save best mimics')
-    parser.add_argument('attack', choices=attacks, nargs=1, help='Which attack to run')
-    parser.add_argument('--plot', default=False, help='Where to save plot (file name)')
+    parser.add_argument('--plot', help='Where to save plot (file name)',
+                        default=False)
     args = parser.parse_args()
     
-    # Perform the chosen attack
-    args.attack = args.attack[0]
-    if args.attack == attacks[0]:
-        attack_mimicry(scenario_name, args.output_dir, args.plot)
-    elif args.attack == attacks[1]:
-        attack_gdkde(scenario_name, args.output_dir, args.plot)
+    # Perform the attacks
+    scenario_name = 'FT'
+    attack_mimicry(scenario_name, args.plot)
+    attack_gdkde(scenario_name, args.plot)
     
     return 0
 

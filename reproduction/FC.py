@@ -30,15 +30,15 @@ import sys
 from common import attack_mimicry
 
 def main():
-    scenario_name = 'FC'
     # Parse command-line arguments
     parser = ArgumentParser()
-    parser.add_argument('output_dir', help='Where to save best mimics')
-    parser.add_argument('--plot', default=False, help='Where to save plot (file name)')
+    parser.add_argument('--plot', help='Where to save plot (file name)',
+                        default=False)
     args = parser.parse_args()
     
     # Perform the attack
-    attack_mimicry(scenario_name, args.output_dir, args.plot)
+    scenario_name = 'FC'
+    attack_mimicry(scenario_name, args.plot)
     return 0
 
 if __name__ == '__main__':

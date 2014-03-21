@@ -18,7 +18,7 @@ along with Mimicus.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
 common.py
 
-Code common to all _scenarios.
+Code common to all scenarios.
 
 Created on March 5, 2014.
 '''
@@ -70,6 +70,7 @@ def _learn_model(scenario_name):
     if path.exists(scenario['model']):
         return
     
+    print 'Training the model for scenario {}...'.format(scenario_name)
     # Decide on classifier
     classifier = 0
     if scenario['classifier'] == 'rf':
@@ -104,7 +105,6 @@ def _initialize():
     '''
     Assembles missing datasets and learns missing models. 
     '''
-    from mimicus.tools.datasets import standardize_csv
     
     def merge_CSVs(csv1, csv2, out):
         '''
@@ -133,6 +133,8 @@ def _initialize():
         merge_CSVs(config.get('datasets', 'contagio'), 
                    config.get('datasets', 'contagio_nopdfrate'), 
                    config.get('datasets', 'contagio_full'))
+    
+    standardize_csv = datasets.standardize_csv
     
     if not path.exists(config.get('datasets', 'contagio_scaler')):
         print 'Creating the contagio-scaled-full dataset...'
@@ -170,14 +172,17 @@ def _initialize():
                         config.get('datasets', 'surrogate_scaled'),
                         scaler)
     
-    print 'Training the model for scenario F...'
     _learn_model('F')
-    print 'Training the model for scenario FC...'
     _learn_model('FC')
-    print 'Training the model for scenario FT...'
     _learn_model('FT')
-    print 'Training the model for scenario FTC...'
     _learn_model('FTC')
+    
+    utility.mkdir_p(config.get('results', 'F_gdkde'))
+    utility.mkdir_p(config.get('results', 'F_mimicry'))
+    utility.mkdir_p(config.get('results', 'FC_mimicry'))
+    utility.mkdir_p(config.get('results', 'FT_gdkde'))
+    utility.mkdir_p(config.get('results', 'FT_mimicry'))
+    utility.mkdir_p(config.get('results', 'FTC_mimicry'))
 
 def _gdkde_wrapper(ntuple):
     '''
@@ -188,24 +193,24 @@ def _gdkde_wrapper(ntuple):
     except Exception as e:
         return e
 
-def attack_gdkde(scenario_name, output_dir, plot=False):
+def attack_gdkde(scenario_name, plot=False):
     '''
-    Invokes the GD-KDE attack for the given scenario and saves the resulting 
-    attack files in the location specified by 'output_dir'. If plot evaluates 
-    to True, saves the resulting plot into the specified file, otherwise 
-    shows the plot in a window. 
+    Invokes the GD-KDE attack for the given scenario and saves the 
+    resulting attack files in the location specified by the 
+    configuration file. If plot evaluates to True, saves the resulting 
+    plot into the specified file, otherwise shows the plot in a window. 
     '''
+    print 'Running the GD-KDE attack...'
     _initialize()
     scenario = _scenarios[scenario_name]
-    output_dir = path.abspath(output_dir)
-    utility.mkdir_p(output_dir)
+    output_dir = config.get('results', '{}_gdkde'.format(scenario_name))
     # Make results reproducible
     random.seed(0)
     # Load and print malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
         _attack_files_missing(wolves)
-    sys.stdout.write('Loading attack samples from "{}"\n'.format(wolves))
+    print 'Loading attack samples from "{}"'.format(wolves)
     malicious = utility.get_pdfs(wolves)
     if not malicious:
         _attack_files_missing(wolves)
@@ -213,14 +218,13 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     # Load an SVM trained with scaled data
     scaler = pickle.load(open(
                         config.get('datasets', 'contagio_scaler')))
-    sys.stdout.write('Using scaler\n')
+    print 'Using scaler'
     svm = sklearn_SVC()
-    sys.stdout.write('Loading model from "{}"\n'.format(scenario['model']))
+    print 'Loading model from "{}"'.format(scenario['model'])
     svm.load_model(scenario['model'])
     
     # Load the training data used for kernel density estimation
-    sys.stdout.write('Loading dataset from file "{}"\n'
-                        .format(scenario['training']))
+    print 'Loading dataset from file "{}"'.format(scenario['training'])
     X_train, y_train, _ = datasets.csv2numpy(scenario['training'])
     # Subsample for faster execution
     ind_sample = random.sample(range(len(y_train)), 500)
@@ -235,40 +239,44 @@ def attack_gdkde(scenario_name, output_dir, plot=False):
     
     # Set up multiprocessing
     pool = multiprocessing.Pool()
-    pool_args = [(svm, fname, scaler, X_train, y_train, kde_reg, 
+    pargs = [(svm, fname, scaler, X_train, y_train, kde_reg, 
                   kde_width, step, max_iter, False) for fname in malicious]
     
-    # Perform the attack
-    pyplot.figure(1)
-    for res, original_file in \
-            zip(pool.imap(_gdkde_wrapper, pool_args), malicious):
+    if plot:
+        pyplot.figure(1)
+    print 'Running the attack...'
+    for res, oldf in zip(pool.imap(_gdkde_wrapper, pargs), malicious):
         if isinstance(res, Exception):
             print res
             continue
         (_, fseq, _, _, attack_file) = res
-        sys.stdout.write('Processing file "{}":\n'.format(original_file))
-        sys.stdout.write('  scores: {}\n'
-                            .format(', '.join([str(s) for s in fseq])))
-        sys.stdout.write('Result: "{}"\n'.format(attack_file))
-        shutil.move(attack_file, output_dir)
-        pyplot.plot(fseq, label=original_file)
+        print 'Processing file "{}":'.format(oldf)
+        print '  scores: {}'.format(', '.join([str(s) for s in fseq]))
+        print 'Result: "{}"'.format(attack_file)
+        if path.dirname(attack_file) != output_dir:
+            shutil.move(attack_file, output_dir)
+        if plot:
+            pyplot.plot(fseq, label=oldf)
     
-    # Plot
-    pyplot.title('GD-KDE attack')
-    axes = pyplot.axes()
-    axes.set_xlabel('Iterations')
-    axes.set_xlim(0, max_iter + 1)
-    axes.set_ylabel('SVM score')
-    axes.yaxis.grid()
-    fig = pyplot.gcf()
-    fig.set_size_inches(6, 4.5)
-    fig.subplots_adjust(bottom=0.1, top=0.92, left=0.1, right=0.96)
+    print 'Saved resulting attack files to {}'.format(output_dir)
+    
     if plot:
-        pyplot.savefig(plot, dpi=300)
-    else:
-        pyplot.show()
+        pyplot.title('GD-KDE attack')
+        axes = pyplot.axes()
+        axes.set_xlabel('Iterations')
+        axes.set_xlim(0, max_iter + 1)
+        axes.set_ylabel('SVM score')
+        axes.yaxis.grid()
+        fig = pyplot.gcf()
+        fig.set_size_inches(6, 4.5)
+        fig.subplots_adjust(bottom=0.1, top=0.92, left=0.1, right=0.96)
+        if plot == 'show':
+            pyplot.show()
+        else:
+            pyplot.savefig(plot, dpi=300)
+            print 'Saved plot to file {}'.format(plot)
 
-def _mimicry_parallel(ntuple):
+def _mimicry_wrap(ntuple):
     '''
     A helper function to parallelize calls to mimicry().
     '''
@@ -277,29 +285,28 @@ def _mimicry_parallel(ntuple):
     except Exception as e:
         return e
 
-def attack_mimicry(scenario_name, output_dir, plot=False):
+def attack_mimicry(scenario_name, plot=False):
     '''
-    Invokes the mimcry attack for the given scenario and saves the resulting 
-    attack files in the location specified by 'output_dir'. If plot evaluates 
-    to True, saves the resulting plot into the specified file, otherwise 
-    shows the plot in a window. 
+    Invokes the mimcry attack for the given scenario and saves the 
+    resulting attack files in the location specified by the 
+    configuration file. If plot evaluates to True, saves the resulting 
+    plot into the specified file, otherwise shows the plot in a window. 
     '''
+    print 'Running the mimicry attack...'
     _initialize()
     scenario = _scenarios[scenario_name]
-    output_dir = path.abspath(output_dir)
-    utility.mkdir_p(output_dir)
+    output_dir = config.get('results', '{}_mimicry'.format(scenario_name))
     # Make results reproducible
     random.seed(0)
     # Load benign files
-    sys.stdout.write('Loading attack targets from file "{}"\n'
-                        .format(scenario['targets']))
+    print 'Loading attack targets from file "{}"'.format(scenario['targets'])
     target_vectors, _, target_paths = datasets.csv2numpy(scenario['targets'])
     targets = zip(target_paths, target_vectors)
-    # Load and print malicious files
+    # Load malicious files
     wolves = config.get('experiments', 'contagio_attack_pdfs')
     if not path.exists(wolves):
         _attack_files_missing(wolves)
-    sys.stdout.write('Loading attack samples from file "{}"\n'.format(wolves))
+    print 'Loading attack samples from file "{}"'.format(wolves)
     malicious = sorted(utility.get_pdfs(wolves))
     if not malicious:
         _attack_files_missing(wolves)
@@ -308,52 +315,53 @@ def attack_mimicry(scenario_name, output_dir, plot=False):
     classifier = 0
     if scenario['classifier'] == 'rf':
         classifier = RandomForest()
-        sys.stdout.write('ATTACKING RANDOM FOREST\n')
+        print 'ATTACKING RANDOM FOREST'
     elif scenario['classifier'] == 'svm':
         classifier = sklearn_SVC()
-        sys.stdout.write('ATTACKING SVM\n')
-    sys.stdout.write('Loading model from "{}"\n'.format(scenario['model']))
+        print 'ATTACKING SVM'
+    print 'Loading model from "{}"'.format(scenario['model'])
     classifier.load_model(scenario['model'])
     
     # Standardize data points if necessary
     scaler = None
     if 'scaled' in scenario['model']:
-        scaler = pickle.load(open(
-                        config.get('datasets', 'contagio_scaler')))
-        sys.stdout.write('Using scaler\n')
+        scaler = pickle.load(open(config.get('datasets', 'contagio_scaler')))
+        print 'Using scaler'
     
     # Set up multiprocessing
     pool = multiprocessing.Pool()
-    pool_args = [(mal, targets, classifier, scaler) for mal in malicious]
+    pargs = [(mal, targets, classifier, scaler) for mal in malicious]
     
-    # Perform the attack
-    pyplot.figure(1)
-    for wolf_path, res in \
-            zip(malicious, pool.imap(_mimicry_parallel, pool_args)):
+    if plot:
+        pyplot.figure(1)
+    print 'Running the attack...'
+    for wolf_path, res in zip(malicious, pool.imap(_mimicry_wrap, pargs)):
         if isinstance(res, Exception):
             print res
             continue
         (target_path, mimic_path, mimic_score, wolf_score) = res
-        sys.stdout.write('Modifying {path} [{score}]:\n'
-                            .format(path=wolf_path, score=wolf_score))
-        sys.stdout.write('  BEST: {path} [{score}]\n'
-                            .format(path=target_path, score=mimic_score))
-        sys.stdout.write('  Moving best to {}\n\n'
-                            .format(path.join(output_dir, 
-                                              path.basename(mimic_path))))
-        shutil.move(mimic_path, output_dir)
-        pyplot.plot([wolf_score, mimic_score])
+        print 'Modifying {p} [{s}]:'.format(p=wolf_path, s=wolf_score)
+        print '  BEST: {p} [{s}]'.format(p=target_path, s=mimic_score)
+        if path.dirname(mimic_path) != output_dir:
+            print '  Moving best to {}\n'.format(path.join(output_dir, 
+                                                 path.basename(mimic_path)))
+            shutil.move(mimic_path, output_dir)
+        if plot:
+            pyplot.plot([wolf_score, mimic_score])
     
-    # Plot
-    pyplot.title('Mimicry attack')
-    axes = pyplot.axes()
-    axes.set_xlabel('Iterations')
-    axes.set_ylabel('Classifier score')
-    axes.yaxis.grid()
-    fig = pyplot.gcf()
-    fig.set_size_inches(6, 4.5)
-    fig.subplots_adjust(bottom=0.1, top=0.92, left=0.1, right=0.96)
+    print 'Saved resulting attack files to {}'.format(output_dir)
+    
     if plot:
-        pyplot.savefig(plot, dpi=300)
-    else:
-        pyplot.show()
+        pyplot.title('Mimicry attack')
+        axes = pyplot.axes()
+        axes.set_xlabel('Iterations')
+        axes.set_ylabel('Classifier score')
+        axes.yaxis.grid()
+        fig = pyplot.gcf()
+        fig.set_size_inches(6, 4.5)
+        fig.subplots_adjust(bottom=0.1, top=0.92, left=0.1, right=0.96)
+        if plot == 'show':
+            pyplot.show()
+        else:
+            pyplot.savefig(plot, dpi=300)
+            print 'Saved plot to file {}'.format(plot)
