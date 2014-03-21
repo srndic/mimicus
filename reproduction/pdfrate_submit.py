@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Mimicus.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
-pdfrate_submitter.py
+pdfrate_submit.py
 
 Given a list of PDF files in a file or a directory, this script will 
 submit those files to PDFrate. 

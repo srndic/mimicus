@@ -182,10 +182,10 @@ Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
 
 You can submit a directory of PDF files or PDF files listed in a 
-text file using the ``reproduction/pdfrate_submitter.py`` script, 
+text file using the ``reproduction/pdfrate_submit.py`` script, 
 e.g.::
 
-    python reproduction/pdfrate_submitter.py results/F_mimicry
+    python reproduction/pdfrate_submit.py results/F_mimicry
 
 To print submission results when they are ready, use the 
 ``reproduction/pdfrate_report.py`` script, e.g.:: 
