@@ -1433,7 +1433,7 @@ class FeatureEdit(object):
             return MaximumExceededError("Feature '{feat}' value maximum is {max}, got {got}.".format(feat=feat_name, max=feat_desc['range'][1], got=feat_val))
         return True
     
-    def modify_file(self, features, verbose=False):
+    def modify_file(self, features, dir='/tmp', verbose=False):
         '''
         Makes a new PDF file with the specified features modified, if 
         possible. 
@@ -1483,7 +1483,11 @@ class FeatureEdit(object):
             features = dict(zip(FeatureDescriptor.get_feature_names(), features))
         assert type(features) == dict
         # Generate a new PDF file
-        newpdf = tempfile.NamedTemporaryFile(mode='rwb+', bufsize=10*1024*1024, suffix='.pdf', delete=False)
+        newpdf = tempfile.NamedTemporaryFile(mode='rwb+', 
+                                             bufsize=10*1024*1024, 
+                                             suffix='.pdf', 
+                                             delete=False, 
+                                             dir=dir)
         
         # Copy the old one into the new one
         with open(self.pdf, 'rb') as oldpdf:
