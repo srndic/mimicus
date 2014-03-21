@@ -79,8 +79,9 @@ def parse_config():
         data_root = os.path.join(project_root, 'data')
         config.set('DEFAULT', 'data_root', data_root)
         config.set('DEFAULT', 'conf_root', conf_root)
-        os.mkdir(config.get('pdfratequeryscheduler', 'query_dir'))
-        os.mkdir(config.get('pdfratequeryscheduler', 'reply_dir'))
+        from mimicus.tools.utility import mkdir_p
+        mkdir_p(config.get('pdfratequeryscheduler', 'query_dir'))
+        mkdir_p(config.get('pdfratequeryscheduler', 'reply_dir'))
         config.write(open(custom_conf, 'wb'))
     
     # A naive way to check if the configuration file was customized
