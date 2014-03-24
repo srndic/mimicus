@@ -37,8 +37,69 @@ from mimicus.attacks.gdkde import gdkde
 from mimicus.classifiers.RandomForest import RandomForest
 from mimicus.classifiers.sklearn_SVC import sklearn_SVC
 from mimicus.tools import datasets, utility
+from mimicus.tools.featureedit import FeatureDescriptor, FeatureEdit
+import numpy
+from sklearn.metrics import accuracy_score
 
 import config
+
+'''
+Top features sorted by variable importance as reported by the R 
+randomForest package for the trained model in the FTC scenario. 
+'''
+top_feats = ['count_font', 
+             'count_js', 
+             'count_javascript', 
+             'pos_box_max', 
+             'pos_eof_avg', 
+             'pos_eof_max', 
+             'len_stream_min', 
+             'count_obj', 
+             'count_endobj',
+             'producer_len']
+
+def get_benign_mean_stddev(data, labels):
+    '''
+    Returns feature medians and standard deviations for benign 
+    training data. 
+    '''
+    print 'Getting medians and std. dev. for features of benign training data'
+    benign_vectors = data[[i for i, l in enumerate(labels) if l == 0],]
+    return (numpy.mean(benign_vectors, axis = 0), 
+            numpy.std(benign_vectors, axis = 0))
+
+def get_FTC_mimicry():
+    '''
+    Returns a numpy.array of size (number of samples, number of 
+    features) with feature values of all mimicry attack results in 
+    the FTC scenario.
+    '''
+    pdfs = utility.get_pdfs(config.get('results', 'FTC_mimicry'))
+    if not pdfs:
+        # Generate the attack files
+        attack_mimicry('FTC')
+        pdfs = utility.get_pdfs(config.get('results', 'FTC_mimicry'))
+    
+    print 'Loading feature vectors from mimicry attack results...'
+    results = numpy.zeros((len(pdfs), FeatureDescriptor.get_feature_count()))
+    for i in range(len(pdfs)):
+        results[i,] = FeatureEdit(pdfs[i]).retrieve_feature_vector_numpy()
+    
+    return results, [1.0 for i in range(len(pdfs))]
+
+def evaluate_classifier(data, labels, test_data, test_labels):
+    '''
+    Returns the classification accuracies of the RandomForest 
+    classifier trained on (data, labels) and tested on a list of 
+    (test_data, test_labels). 
+    '''
+    rf = RandomForest()
+    rf.fit(data, labels)
+    accs = []
+    for ted, tel in zip(test_data, test_labels):
+        pred = rf.predict(ted)
+        accs.append(accuracy_score(tel, pred))
+    return accs
 
 '''
 A dictionary encoding adversarial knowledge for every scenario.
