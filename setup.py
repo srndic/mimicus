@@ -24,10 +24,34 @@ Created on March 11, 2014.
 
 import multiprocessing # To fix a bug when running tests
 from setuptools import setup, find_packages
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 def readme():
     with open('README.rst') as f:
         return f.read()
+
+class MyInstall(install):
+    '''
+    A class for running custom post-install code.
+    '''
+    def run(self):
+        '''
+        Runs after installation. 
+        '''
+        install.run(self)
+        from mimicus import config
+
+class MyDevelop(develop):
+    '''
+    A class for running custom post-install code in develop-mode.
+    '''
+    def run(self):
+        '''
+        Runs after develop-mode installation. 
+        '''
+        develop.run(self)
+        from mimicus import config
 
 setup(name='mimicus',
       version='1.0',
@@ -45,4 +69,6 @@ setup(name='mimicus',
       zip_safe=False,
       test_suite='nose.collector',
       tests_require=['nose'],
-      include_package_data=True)
+      include_package_data=True,
+      cmdclass={'install': MyInstall,
+                'develop': MyDevelop})

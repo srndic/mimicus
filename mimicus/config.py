@@ -18,7 +18,7 @@ along with Mimicus.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
 config.py
 
-A module that parses the configuration file '~/.mimicus.conf' 
+A module that parses the configuration file '~/.config/mimicus/mimicus.conf' 
 and exposes an object called 'config'. Include this module for automatic 
 parsing of configuration options. 
 
@@ -26,8 +26,20 @@ Created on March 26, 2013.
 '''
 
 import ConfigParser
+import errno
 import os
 import sys
+
+def _mkdir_p(path):
+    '''
+    Creates a directory regardless whether it already exists or not.
+    '''
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
 
 '''
 The configuration object of type SafeConfigParser. Use it to get() 
@@ -42,32 +54,32 @@ get = config.get
 
 def parse_config():
     '''
-    Parses the configuration file '~/.mimicus/mimicus.conf' if it 
+    Parses the configuration file '$XDG_CONFIG_HOME/mimicus/mimicus.conf' if it 
     exists, otherwise creates it by copying 'default.conf'. 
     '''
-    # default.conf must reside in the same directory as this file
     project_root = os.path.dirname(__file__)
-    conf_root = os.path.expanduser('~/.mimicus')
+    conf_parent = os.environ['XDG_CONFIG_HOME'] if 'XDG_CONFIG_HOME' in \
+                os.environ else os.path.expanduser('~/.config')
+    conf_root = os.path.join(conf_parent, 'mimicus')
     custom_conf = os.path.join(conf_root, 'mimicus.conf')
     
     # Generate the configuration file if it's missing
     custom_conf_created = False
     if not os.path.exists(custom_conf):
-        default_conf = os.path.join(project_root, 'default.conf')
-        # Create the ~/.mimicus directory
-        if not os.path.exists(conf_root):
-            os.mkdir(conf_root)
-        elif not os.path.isdir(conf_root):
-            sys.stderr.write('Unable to create directory {}\n'
-                             .format(conf_root))
+        # Create the conf_root directory
+        try:
+            _mkdir_p(conf_root)
+        except:
+            sys.stderr.write('Unable to create directory {}'.format(conf_root))
             sys.exit(1)
         # Copy default.conf to the custom configuration file
         try:
+            default_conf = os.path.join(project_root, 'default.conf')
             open(custom_conf, 'wb').write(open(default_conf).read())
             custom_conf_created = True
         except:
             sys.stderr.write('Error: Unable to create file "{}".'
-                                .format(custom_conf))
+                             .format(custom_conf))
             sys.exit(1)
     
     # Parse the configuration
@@ -79,9 +91,8 @@ def parse_config():
         data_root = os.path.join(project_root, 'data')
         config.set('DEFAULT', 'data_root', data_root)
         config.set('DEFAULT', 'conf_root', conf_root)
-        from mimicus.tools.utility import mkdir_p
-        mkdir_p(config.get('pdfratequeryscheduler', 'query_dir'))
-        mkdir_p(config.get('pdfratequeryscheduler', 'reply_dir'))
+        _mkdir_p(config.get('pdfratequeryscheduler', 'query_dir'))
+        _mkdir_p(config.get('pdfratequeryscheduler', 'reply_dir'))
         config.write(open(custom_conf, 'wb'))
     
     # A naive way to check if the configuration file was customized
