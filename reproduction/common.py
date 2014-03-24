@@ -106,19 +106,19 @@ A dictionary encoding adversarial knowledge for every scenario.
 '''
 _scenarios = \
 {'F' : {'classifier' : 'svm', 
-        'model' : config.get('experiments', 'surrogate_scaled_svm_model'), 
+        'model' : config.get('experiments', 'F_scaled_model'), 
         'targets' : config.get('experiments', 'surrogate_attack_targets'),
         'training' : config.get('datasets', 'surrogate_scaled')}, 
  'FT' : {'classifier' : 'svm',
-         'model' : config.get('experiments', 'contagio_scaled_svm_model'), 
+         'model' : config.get('experiments', 'FT_scaled_model'), 
          'targets' : config.get('experiments', 'contagio_attack_targets'),
          'training' : config.get('datasets', 'contagio_scaled')}, 
  'FC' : {'classifier' : 'rf',
-         'model' : config.get('experiments', 'surrogate_rf_model'),
+         'model' : config.get('experiments', 'FC_model'),
          'targets' : config.get('experiments', 'surrogate_attack_targets'), 
          'training' : config.get('datasets', 'surrogate')}, 
  'FTC' : {'classifier' : 'rf',
-         'model' : config.get('experiments','contagio_rf_model'),
+         'model' : config.get('experiments','FTC_model'),
          'targets' : config.get('experiments', 'contagio_attack_targets'), 
          'training' : config.get('datasets', 'contagio')},}
 

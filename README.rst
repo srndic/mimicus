@@ -209,9 +209,10 @@ files use the same `INI-file-like syntax
 Mimicus Library Configuration File
 ====================================
 
-The first time you run an attack, the 
-directory ``~/.mimicus`` will be created with the configuration file 
-``mimicus.conf`` inside. Use it to customize your library installation. 
+After the installation or the first time you run an attack, the 
+directory ``$XDG_CONFIG_HOME/mimicus``, e.g., ``~/.config/mimicus``, 
+will be created with the configuration file ``mimicus.conf`` inside. 
+Use it to customize your library installation. 
 Options are described in the ``mimicus/default.conf`` file. 
 
 

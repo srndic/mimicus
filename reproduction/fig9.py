@@ -65,7 +65,7 @@ def fig9(tr_vec, tr_labels, te_vec, te_labels, fnames):
     '''
     print 'Loading random forest classifier...'
     rf = RandomForest()
-    rf.load_model(config.get('experiments', 'contagio_rf_model'))
+    rf.load_model(config.get('experiments', 'FTC_model'))
     ben_means, ben_devs = common.get_benign_mean_stddev(tr_vec, tr_labels)
     res = []
     # te_vec will be randomly modified in feature space.
