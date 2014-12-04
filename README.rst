@@ -2,8 +2,11 @@
 Mimicus v1.0
 ================
 
-A Python library for adversarial classifier evasion by 
-Nedim Srndic and Pavel Laskov, University of Tuebingen.
+--------------------------------------------------------
+A Python library for adversarial classifier evasion 
+--------------------------------------------------------
+
+By Nedim Srndic and Pavel Laskov, University of Tuebingen.
 
 Homepage: https://github.com/srndic/mimicus
 
@@ -19,9 +22,9 @@ Mimicus consists of a reusable Python library (in the directory
 the paper (``reproduction/``). 
 
 
------------------------------------------------------
+
 Installation and Setup
------------------------------------------------------
+============================
 
 Mimicus was developed in Python 2.7. Only the library files (the 
 ``mimicus/`` directory) are installed, code and data required for 
@@ -67,7 +70,7 @@ Omit "``--user``" to uninstall a system-wide installation.
 
 
 Required Dependencies
-===========================
+-------------------------
 
 Mimicus requires the ``curl`` and ``perl`` executables to be installed::
 
@@ -93,7 +96,7 @@ these `directions <http://www.scipy.org/install.html>`_.
 
 
 Optional Dependencies
-===========================
+---------------------------
 
 Mimicus provides two different implementations of the Random Forest 
 classifier: 
@@ -112,7 +115,7 @@ implementation installed or not.
 
 
 Setting up PDFrate Submissions
-====================================
+---------------------------------
 
 Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
@@ -136,9 +139,8 @@ run in regular time intervals (e.g, using cron) and set up the
 query and reply directories in the Mimicus configuration file 
 (see `Configuration Files`_).
 
------------------------------------------------------
 Reproduction of Experiments
------------------------------------------------------
+======================================
 
 If you wish to reproduce the experiments described in the paper, 
 you will find that everything is included in this project except 
@@ -146,7 +148,7 @@ the malicious attack candidate files.
 
 
 Attack Files
-====================================
+---------------------------
 
 Files from the Contagio dataset were used in the experiments 
 described in the paper and we cannot distribute them. They are 
@@ -164,7 +166,7 @@ your own list.
 
 
 Running Experiments
-====================================
+------------------------------
 
 Experiments can be reproduced by running these scripts in the 
 ``reproduction/`` directory, one per attack scenario::
@@ -176,7 +178,7 @@ Experiments can be reproduced by running these scripts in the
 
 
 Submitting Files to PDFrate
-====================================
+--------------------------------
 
 Before submitting files to PDFrate, please read the `policies
 <http://pdfrate.com/policies>`_.
@@ -196,9 +198,8 @@ See `Setting up PDFrate Submissions`_ if you haven't
 already configured PDFrate submissions.
 
 
------------------------------------------------------
 Configuration Files
------------------------------------------------------
+===============================
 
 There are two configuration files in this project: one for the 
 Mimicus library and the other for the reproduction code. Both 
@@ -207,7 +208,7 @@ files use the same `INI-file-like syntax
 
 
 Mimicus Library Configuration File
-====================================
+--------------------------------------
 
 After the installation or the first time you run an attack, the 
 directory ``$XDG_CONFIG_HOME/mimicus``, e.g., ``~/.config/mimicus``, 
@@ -217,7 +218,7 @@ Options are described in the ``mimicus/default.conf`` file.
 
 
 Reproduction Configuration File
-====================================
+-----------------------------------
 
 The first time you run an attack, 
 the configuration file ``reproduction/custom.conf`` will be created. 
@@ -225,31 +226,30 @@ Use it to customize the execution of experiments. Options are
 described in the ``reproduction/default.conf`` file. 
 
 
------------------------------------------------------
-Project layout
------------------------------------------------------
+Project Layout
+=======================
 
-- ``mimicus/`` - Python package mimicus (library)
-- ``mimicus/attacks/`` - attack method implementations
-- ``mimicus/bin/`` - scripts
-- ``mimicus/classifiers/`` - classifier implementations
-- ``mimicus/data/`` - data files required for testing the library
-- ``mimicus/test/`` - code for testing the library
-- ``mimicus/tools/`` - code for feature extraction, etc.
+* ``mimicus/`` - Python package mimicus (library)
 
-- ``results`` - attack results will be saved in this directory
+  - ``attacks/`` - attack method implementations
+  - ``bin/`` - scripts
+  - ``classifiers/`` - classifier implementations
+  - ``data/`` - data files required for testing the library
+  - ``test/`` - code for testing the library
+  - ``tools/`` - code for feature extraction, etc.
 
-- ``reproduction/`` - Python code for experiment reproduction
-- ``data/`` - data files required to reproduce the experiments
+* ``results`` - attack results will be saved in this directory
 
-- ``COPYING`` - software license
-- ``MANIFEST.in`` - Python setuptools configuration
-- ``README`` - this file
+* ``reproduction/`` - Python code for experiment reproduction
+* ``data/`` - data files required to reproduce the experiments
+
+* ``COPYING`` - software license
+* ``MANIFEST.in`` - Python setuptools configuration
+* ``README`` - this file
 
 
------------------------------------------------------
 Licensing
------------------------------------------------------
+==============
 
 Mimicus is free software: you can redistribute it and/or modify it 
 under the terms of the `GNU General Public License 
